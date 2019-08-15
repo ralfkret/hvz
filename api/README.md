@@ -14,6 +14,12 @@
 | PUT          | Ändern eines Products         |           |
 | DELETE       | Löschen eines Products        |           |
 
+### stock_movements
+| HTTP Method  | Action                        | Beispiel  |
+| ------------ | ----------------------------- | --------- |
+| GET          | Liste aller Products holen    |           |
+
+
 
 ## Development
 
