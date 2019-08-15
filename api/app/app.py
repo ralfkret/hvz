@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, make_response, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+import logging
 
 app = Flask(__name__)
 
@@ -20,6 +21,7 @@ class Product(db.Model):
 
     @staticmethod    
     def from_json(json_post):        
+      logging.debug(json_post)
       name = json_post.get('name')        
       wanted_amount = json_post.get('wanted_amount')        
       return Product(name=name, wanted_amount=wanted_amount)
