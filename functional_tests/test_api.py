@@ -1,10 +1,16 @@
-import unittest
 import json
-import requests
+import os
+import unittest
 from http import HTTPStatus
 from types import SimpleNamespace
+
+import docker
+import psycopg2
+import requests
 from retry.api import retry_call
-from manged_container import start_container
+
+from manged_container import (build_api_container, create_sql_schema,
+                              start_container, wait_for_psql_container_ready)
 
 api_url = 'http://localhost:8000/hvz/api/v1.0'
 
@@ -13,7 +19,27 @@ class ApiFunctionalTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.api_server = start_container('hvz-api', ports={8000: 8000})
+        build_api_container()
+
+        db_script_path = os.path.abspath('database/sql_scripts/')
+        
+        volumes = {db_script_path: {'bind': '/mnt/sql_scripts', 'mode': 'rw'}}
+        cls.psql_server = start_container(
+            'postgres', publish_all_ports=True, volumes=volumes)
+        wait_for_psql_container_ready(cls.psql_server.ip_address)
+
+        create_sql_schema(cls.psql_server.container)
+
+        api_environment = {
+            'hvz_api_dbhost':cls.psql_server.ip_address
+        }
+
+        cls.api_server = start_container(
+            'hvz-api', publish_all_ports=True, environment=api_environment)
+        api_server_port = cls.api_server.container.ports['8000/tcp'][0]["HostPort"]
+
+        global api_url 
+        api_url = f'http://localhost:{api_server_port}/hvz/api/v1.0'
         retry_call(requests.get, [api_url], tries=5,
                    delay=0.5, backoff=2, logger=None)
         cls.errors_occured = False
@@ -21,11 +47,16 @@ class ApiFunctionalTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        logs = cls.api_server.container.logs()
+        api_logs = cls.api_server.container.logs()
+        sql_logs = cls.psql_server.container.logs()
         cls.api_server.container.remove(force=True)
+        cls.psql_server.container.remove(force=True)
         if cls.errors_occured:
+            print('#### LOG OF SQL CONTAINER #####')
+            for l in sql_logs.decode('utf-8').split('\n'):
+                print('## SQL LOG ## ', l)
             print('#### LOG OF API CONTAINER #####')
-            for l in logs.decode('utf-8').split('\n'):
+            for l in api_logs.decode('utf-8').split('\n'):
                 print('## API LOG ## ', l)
 
 
@@ -82,7 +113,7 @@ class ApiFunctionalTests(unittest.TestCase):
         assert response_data.id
         assert response_data.name == data.name
         assert response_data.wanted_amount == data.wanted_amount
-        assert r.headers['location'] == f'{api_url}/products/{      response_data.id}'
+        assert r.headers['location'] == f'{api_url}/products/{response_data.id}'
     
 
     def test_add_product_with_duplicate_name_results_in_409_status(self):
@@ -95,7 +126,7 @@ class ApiFunctionalTests(unittest.TestCase):
         response_data = SimpleNamespace(**r.json())
 
         assert response_data.error
-        assert response_data.error == 'Product by the same name already exists.'
+        assert response_data.error == 'Product by the same name already exists.', response_data.error
 
 
     def test_can_delete_a_product(self):
@@ -103,7 +134,7 @@ class ApiFunctionalTests(unittest.TestCase):
         product = SimpleNamespace(**r.json()[0])
         r1 = requests.delete(f'{api_url}/products/{product.id}')
 
-        assert r1.status_code == HTTPStatus.NO_CONTENT
+        assert r1.status_code == HTTPStatus.NO_CONTENT, r1.status_code
 
 
 if __name__ == "__main__":
