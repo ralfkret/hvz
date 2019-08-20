@@ -1,0 +1,35 @@
+{
+    "sqltools.connections": [
+        {
+            "askForPassword": false,
+            "connectionTimeout": 30,
+            "database": "postgres",
+            "dialect": "PostgreSQL",
+            "name": "PSQL",
+            "port": 5432,
+            "server": "10.255.0.2",
+            "username": "postgres"
+        },
+        {
+            "askForPassword": false,
+            "connectionTimeout": 30,
+            "database": "postgres",
+            "dialect": "PostgreSQL",
+            "name": "localPSQL",
+            "port": 5432,
+            "server": "127.0.0.1",
+            "username": "postgres"
+        }
+    ],
+    "python.pythonPath": ".venv/bin/python3",
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./functional_tests",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": true
+}
