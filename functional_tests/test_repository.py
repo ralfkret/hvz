@@ -1,9 +1,11 @@
-from context import repository
-import unittest
 import os
 import time
+import unittest
+
 import psycopg2
 from psycopg2.extras import NamedTupleCursor
+
+from context import repository
 
 config = dict(dbname='postgres', user='postgres', host='localhost')
 
@@ -14,7 +16,7 @@ class Test_Repository(unittest.TestCase):
     def new_product_name(self):
         return f'product_{time.time()}'
 
-    def reset_db_for_doctest(self):
+    def reset_db(self):
         with psycopg2.connect(**config) as cn:
             with cn.cursor() as cur:
                 sql_script = os.path.join(os.path.dirname(__file__), '../database/sql_scripts/create.sql')
@@ -32,7 +34,16 @@ class Test_Repository(unittest.TestCase):
                 cur.execute(sql)
 
     def setUp(self):
-        self.reset_db_for_doctest()
+        self.reset_db()
+
+    def test_repo_throws_if_not_used_as_context_manager(self):
+        r = Repository(**config)
+        expected_msg = 'Repository::__enter__ not called. You should use the Repository in a with statement.'
+        methods = [r.update_product, r.insert_product, r.delete_product, r.get_all_products]
+        for m in methods:
+            with self.assertRaises(RuntimeError) as cm:
+                m()
+            assert cm.exception.args[0] == expected_msg, m
 
     def test_get_all_products(self):
         with Repository(**config) as repo:
