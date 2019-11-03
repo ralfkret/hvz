@@ -2,6 +2,7 @@
 
 import unittest
 import psycopg2
+from os import path
 
 class DBTest(unittest.TestCase):
   def setUp(self):
@@ -9,11 +10,12 @@ class DBTest(unittest.TestCase):
     self.conn.autocommit = True
     cur = self.conn.cursor()
 
-    sql_file = open("create.sql")
+    dir = path.dirname(path.abspath(__file__))
+    sql_file = open(path.join(dir, "create.sql"))
     cur.execute(sql_file.read())
     sql_file.close()
 
-    data_file = open("test_data.sql")
+    data_file = open(path.join(dir, "test_data.sql"))
     cur.execute(data_file.read())
     data_file.close()
 
