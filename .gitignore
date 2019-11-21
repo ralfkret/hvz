@@ -102,5 +102,3 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-.venv
-api/app/example.sqlite

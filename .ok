@@ -1,0 +1,3 @@
+source .venv/bin/activate
+docker run --name postgres --rm -it -p 5432:5432 postgres
+docker exec -it -u postgres postgres bash
