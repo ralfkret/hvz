@@ -15,7 +15,7 @@ def set_loging_level():
         format='%(asctime)s %(levelname)s %(module)s %(funcName)s: %(message)s')
 
 
-def create_app(config_name):
+def create_app(config_name='default'):
     set_loging_level()
 
     app = Flask(__name__)
@@ -23,5 +23,13 @@ def create_app(config_name):
     config[config_name].init_app(app)
 
     db.init_app(app)
+
+
+    from .adminsite import admin
+    app.register_blueprint(admin, url_prefix='/admin')
+
+    @app.route('/')
+    def index():
+        return '<h1>Hello</h1>'
 
     return app
