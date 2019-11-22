@@ -21,7 +21,7 @@
             "username": "postgres"
         }
     ],
-    "python.pythonPath": ".venv/bin/python3",
+    "python.pythonPath": "venv\\Scripts\\python.exe",
     "python.testing.unittestArgs": [
         "-v",
         "-s",
