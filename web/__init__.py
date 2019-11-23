@@ -1,6 +1,6 @@
 from os import getenv
 import logging
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from config import config
 
@@ -29,7 +29,8 @@ def create_app(config_name='default'):
     app.register_blueprint(admin, url_prefix='/admin')
 
     @app.route('/')
+    @app.route('/defaultsite')
     def index():
-        return '<h1>Hello</h1>'
+        return redirect(url_for('adminsite.product_list'))
 
     return app
