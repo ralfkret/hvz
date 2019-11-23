@@ -18,24 +18,36 @@ def make_shell_context():
     return dict(db=db, Product=Product, gap=get_all_products)
 
 
+def execute_sql(sql):
+    cn = db.engine.connect()
+    t = cn.begin()
+    cn.execute(sql)
+    t.commit()
+    cn.close()
+
+
 @app.cli.command()
 def create_database():
     with open(os.path.join(basedir, 'database', 'create.sql')) as f:
         sql = f.read()
-        cn = db.engine.connect()
-        t = cn.begin()
-        cn.execute(sql)
-        t.commit()
-        cn.close()
+        execute_sql(sql)
         
-    
+ 
 @app.cli.command()
 def add_test_data():
     with open(os.path.join(basedir, 'database', 'test_data.sql')) as f:
         sql = f.read()
-        cn = db.engine.connect()
-        t = cn.begin()
-        cn.execute(sql)
-        t.commit()
-        cn.close()
+        execute_sql(sql)
+ 
+
+@app.cli.command()
+def add_1000_products():
+    with open(os.path.join(basedir, 'database', 'products-1000.sql')) as f:
+        lines = f.read().split('\n')
+        for sql in lines:
+            try:
+                execute_sql(sql) 
+            except:
+                pass
+
 
