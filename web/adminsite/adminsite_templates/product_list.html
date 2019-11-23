@@ -1,3 +1,55 @@
-{% for p in products %}
-    <p>{{p.name}}</p>
-{% endfor %}
+{% extends 'base.html' %}
+{% block title %} Produkte {% endblock title %}
+{% block content %}
+
+{% macro paginate(pages, nav_target, show_pages) %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <li class="page-item {{ 'disabled' if not pages.has_prev }}">
+            <a class="page-link" href="{{ url_for(nav_target, page=pages.page-1) }}">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% for i in range(1, 1+products.pages)  %}
+        {% if i in show_pages %}
+        <li class="page-item {{ 'active' if pages.page == i }}">
+            <a class="page-link" href="{{ url_for(nav_target, page=i) }}">{{i}}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        <li class="page-item {{ 'disabled' if not pages.has_next }}">
+            <a class="page-link" href="{{ url_for(nav_target, page=pages.page+1) }}">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endmacro %}
+
+{{paginate(products, '.product_list', show_pages)}}
+
+<table class="table table-sm table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>gewünschte<br> Menge</th>
+            <th>Aktion</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in products.items %}
+        <tr>
+            <td>{{p.id}}</td>
+            <td>{{p.name}}</td>
+            <td>{{p.wanted_amount}}</td>
+            <td>
+                <a href="#"><i class="fas fa-edit"></i></a>
+                <a href="#"><i class="fas fa-trash"></i></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{{paginate(products, '.product_list', show_pages)}}
+{% endblock content %}
