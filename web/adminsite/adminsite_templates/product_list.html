@@ -10,8 +10,12 @@
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        {% for i in range(1, 1+products.pages)  %}
-        {% if i in show_pages %}
+        {% for i in products.iter_pages()  %}
+        {% if not i %}
+        <li class="page-item disabled">
+            <a class="page-link" href="{{ url_for(nav_target, page=i) }}">...</a>
+        </li>
+        {% else %}
         <li class="page-item {{ 'active' if pages.page == i }}">
             <a class="page-link" href="{{ url_for(nav_target, page=i) }}">{{i}}</a>
         </li>
@@ -26,7 +30,7 @@
 </nav>
 {% endmacro %}
 
-{{paginate(products, '.product_list', show_pages)}}
+{{paginate(products, '.product_list', None)}}
 
 <table class="table table-sm table-striped">
     <thead class="thead-light">
@@ -44,12 +48,12 @@
             <td>{{p.name}}</td>
             <td>{{p.wanted_amount}}</td>
             <td>
-                <a href="#"><i class="fas fa-edit"></i></a>
+                <a href="{{ url_for('.product_edit', product_id=p.id) }}"><i class="fas fa-edit"></i></a>
                 <a href="#"><i class="fas fa-trash"></i></a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-{{paginate(products, '.product_list', show_pages)}}
+{{paginate(products, '.product_list', None)}}
 {% endblock content %}
