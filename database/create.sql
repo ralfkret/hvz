@@ -3,7 +3,7 @@
 DROP SCHEMA IF EXISTS hvs CASCADE;
 CREATE SCHEMA hvs;
 
-DROP FUNCTION IF EXISTS no_negative_amount_function;
+DROP FUNCTION IF EXISTS no_negative_amount_function();
 
 DROP TRIGGER IF EXISTS no_negative_amount_trigger 
 ON hvs.stock_movement CASCADE;
