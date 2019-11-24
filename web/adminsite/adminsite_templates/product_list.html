@@ -2,9 +2,9 @@
 {% block title %} Produkte {% endblock title %}
 {% block content %}
 
-{% macro paginate(pages, nav_target, show_pages) %}
+{% macro paginate(pages, nav_target) %}
 <nav aria-label="Page navigation example">
-    <ul class="pagination">
+    <ul class="pagination justify-content-center m-3">
         <li class="page-item {{ 'disabled' if not pages.has_prev }}">
             <a class="page-link" href="{{ url_for(nav_target, page=pages.page-1) }}">
                 <span aria-hidden="true">&laquo;</span>
@@ -30,7 +30,7 @@
 </nav>
 {% endmacro %}
 
-{{paginate(products, '.product_list', None)}}
+{{paginate(products, '.product_list')}}
 
 <table class="table table-sm table-striped">
     <thead class="thead-light">
@@ -55,5 +55,5 @@
         {% endfor %}
     </tbody>
 </table>
-{{paginate(products, '.product_list', None)}}
+{{paginate(products, '.product_list')}}
 {% endblock content %}

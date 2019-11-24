@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %} {{product.name}} {% endblock title %}
+{% block content %}
+
+<form method="POST" class="container-fluid">
+    {{ form.csrf_token }}
+
+    <div class="form-group">
+        {{ form.id.label }}
+        {{ form.id(
+                readonly=True, 
+                value=product.id, 
+                class="form-control",
+                placeholder="Wird vom System vergeben"
+            ) }}
+    </div>
+    <div class="form-group">
+        {{ form.name.label }}
+        {{ form.name(
+            value=product.name,
+            class="form-control",
+            maxlength=50,
+            placeholder="Produktbezeichnung (z.B. Milch)" 
+        )}}
+    </div>
+    <div class="form-group">
+        {{ form.wanted_amount.label }}
+        {{ form.wanted_amount(
+            value=product.wanted_amount,
+            class="form-control",
+            placeholder="Wie viel hättten Sie gerne davon in Ihrem Vorratsschrank..." 
+        )}}
+    </div>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+</form>
+
+{% endblock content %}
