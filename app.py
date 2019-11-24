@@ -19,11 +19,11 @@ def make_shell_context():
 
 
 def execute_sql(sql):
-    cn = db.engine.connect()
-    t = cn.begin()
-    cn.execute(sql)
-    t.commit()
-    cn.close()
+    with db.engine.connect() as cn:
+        t = cn.begin()
+        cn.execute(sql)
+        t.commit()
+        cn.close()
 
 
 @app.cli.command()
@@ -47,7 +47,10 @@ def add_1000_products():
         for sql in lines:
             try:
                 execute_sql(sql) 
-            except:
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                logger.error(e)
                 pass
 
 
