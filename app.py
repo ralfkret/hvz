@@ -20,10 +20,14 @@ def make_shell_context():
 
 def execute_sql(sql):
     with db.engine.connect() as cn:
-        t = cn.begin()
-        cn.execute(sql)
-        t.commit()
+        with cn.begin() as txn:
+            result = cn.execute(sql)
+            rows = None
+            if result.returns_rows:
+                rows = result.fetchall()
+            txn.commit()
         cn.close()
+    return rows
 
 
 @app.cli.command()
