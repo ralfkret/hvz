@@ -1,0 +1,1 @@
+# Without this file pytest does not discover the tests when run von vs code.
