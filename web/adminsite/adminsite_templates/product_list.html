@@ -10,7 +10,7 @@
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        {% for i in products.iter_pages()  %}
+        {% for i in products.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1)  %}
         {% if not i %}
         <li class="page-item disabled">
             <a class="page-link" href="{{ url_for(nav_target, page=i) }}">...</a>
@@ -37,7 +37,8 @@
         <tr>
             <th>#</th>
             <th>Name</th>
-            <th>gewünschte<br> Menge</th>
+            <th>gewünschte<br>Menge</th>
+            <th>Bewegungen</th>
             <th>Aktion</th>
         </tr>
     </thead>
@@ -47,9 +48,10 @@
             <td>{{p.id}}</td>
             <td>{{p.name}}</td>
             <td>{{p.wanted_amount}}</td>
+            <td>{{p.stock_movements.all() | count}}</td>
             <td>
                 <a href="{{ url_for('.product_edit', product_id=p.id) }}"><i class="fas fa-edit"></i></a>
-                <a href="#"><i class="fas fa-trash"></i></a>
+                <a href="{{ url_for('.product_delete', id=p.id)}}"><i class="fas fa-trash"></i></a>
             </td>
         </tr>
         {% endfor %}

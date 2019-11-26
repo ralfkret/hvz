@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, request, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, Length
@@ -20,6 +20,18 @@ class ProductForm(FlaskForm):
     id = IntegerField('Id')
     name = StringField('Name', validators=[DataRequired(), Length(max=50)])
     wanted_amount = IntegerField('Gewünschte Anzahl', validators=[DataRequired()])
+
+@admin.route('product_delete/<int:id>', methods=['GET', 'POST'])
+def product_delete(id):
+    product = Product.query.get_or_404(id) 
+    form = ProductForm()
+    if form.validate_on_submit():
+        db.session.delete(product)
+        db.session.commit()
+        flash(f'Produkt \'{product.name}\' gelöscht.', 'info')
+        return redirect(url_for('.product_list'))
+    flash(f'Sie löschen das Produkt \'{product.name}\'!', 'danger')
+    return render_template('product_delete.html', form=ProductForm(), product=product)
 
 @admin.route('product_edit/<int:product_id>', methods=['GET', 'POST'])
 def product_edit(product_id):

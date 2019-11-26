@@ -26,7 +26,7 @@ def app():
         execute_sql(_create_sql)
         execute_sql(_data_sql)
 
-    yield app
+        yield app
 
 
 @pytest.fixture

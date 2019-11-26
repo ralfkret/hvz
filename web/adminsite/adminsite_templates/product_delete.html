@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %} {{product.name}} {% endblock title %}
+{% block content %}
+
+<form method="POST" class="container-fluid"> {{ form.csrf_token }} <div class="form-group">
+        {{ form.id.label }}
+        {{ form.id(
+                readonly=True, 
+                value=product.id, 
+                class="form-control",
+            ) }}
+    </div>
+    <div class="form-group">
+        {{ form.name.label }}
+        {{ form.name(
+            readonly=True, 
+            value=product.name,
+            class="form-control",
+            maxlength=50,
+        )}}
+    </div>
+    <div class="form-group">
+        {{ form.wanted_amount.label }}
+        {{ form.wanted_amount(
+            readonly=True, 
+            value=product.wanted_amount,
+            class="form-control",
+        )}}
+    </div>
+    <button type="submit" class="btn btn-danger">Löschen</button>
+</form>
+
+{% endblock content %}
