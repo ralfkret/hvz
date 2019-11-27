@@ -1,7 +1,7 @@
 .\venv\Scripts\activate.ps1
 code .
-docker run -d --name postgres --rm -it -p 5432:5432 postgres
-docker run --name postgres --rm -it -p 5432:5432 postgres
+docker run -d --name postgres --rm -it -p 5432:5432 postgres:9.4
+docker run --name postgres --rm -it -p 5432:5432 postgres:9.4
 docker exec -it -u postgres postgres bash
 $env:FLASK_DEBUG=1
 flask run
