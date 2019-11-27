@@ -1,3 +1,4 @@
+from flask import url_for
 from . import db
 
 
@@ -9,6 +10,16 @@ class Product(db.Model):
     name = db.Column(db.String(50), unique = True)
     wanted_amount = db.Column(db.Integer, nullable=False)
     stock_movements = db.relationship('StockMovement', backref='product', lazy='dynamic')
+
+    def to_json(self):
+        json_product = {
+            'url': url_for('api.get_product', id=self.id),
+            'name': self.name,
+            'wanted_amount': self.wanted_amount,
+            'stock_movement_count': self.stock_movements.count()
+        }
+        return json_product
+
 
     def __repr__(self):
         return f'Product(id={self.id}, name=\'{self.name}\', wanted_amount={self.wanted_amount})'

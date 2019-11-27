@@ -24,13 +24,13 @@ def create_app(config_name='default'):
 
     db.init_app(app)
 
+    from .main import main
+    app.register_blueprint(main)
 
     from .adminsite import admin
     app.register_blueprint(admin, url_prefix='/admin')
 
-    @app.route('/')
-    @app.route('/defaultsite')
-    def index():
-        return redirect(url_for('adminsite.product_list'))
+    from .api import api as api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 
     return app
